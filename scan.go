@@ -120,7 +120,10 @@ func findFieldIndexForColumn(col string, structType reflect.Type) (result []int)
 	return FindFieldIndexByMatcher(matcher, structType)
 }
 
-func ScanPrepared[T any](target *T, cols []string, s Scanner) error {
+func ScanPrepared(target any, cols []string, s Scanner) error {
+	if reflect.ValueOf(target).IsNil() || reflect.TypeOf(target).Kind() != reflect.Pointer {
+		panic("invalid pointer top target")
+	}
 	pointers := make([]any, len(cols))
 
 	for i, col := range cols {
@@ -137,7 +140,7 @@ func ScanPrepared[T any](target *T, cols []string, s Scanner) error {
 	return s.Scan(pointers...)
 }
 
-func Scan[T any](target *T, s ColumnAwareScanner) error {
+func Scan(target any, s ColumnAwareScanner) error {
 	cols, err := s.Columns()
 	if err != nil {
 		return err

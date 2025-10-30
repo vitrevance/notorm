@@ -1,6 +1,8 @@
 package notorm
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type fieldKey struct {
 	t reflect.Type
@@ -87,4 +89,15 @@ func (s *Schema[T]) NameOf(column any) string {
 		p: r.Pointer(),
 	}
 	return s.cache[key]
+}
+
+func (s *Schema[T]) Names() []string {
+	if s.cache == nil {
+		s.initCache()
+	}
+	names := make([]string, 0, len(s.cache))
+	for _, v := range s.cache {
+		names = append(names, v)
+	}
+	return names
 }
